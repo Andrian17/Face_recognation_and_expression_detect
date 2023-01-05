@@ -22,7 +22,7 @@ Jalankan file main.py
 
 ## Contoh
 
-![Me]('/Screenshot_55.png')
+![Me]('Screenshot_55.png')
 
 ## Referensi
 
