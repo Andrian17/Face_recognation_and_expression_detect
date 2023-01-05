@@ -1,4 +1,4 @@
-import cv2, os, numpy as np
+import cv2, numpy as np
 
 # TensorFlow
 from tensorflow.keras.models import Sequential
@@ -27,27 +27,25 @@ model.add(Dense(1024, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(7, activation='softmax'))
 
-model.load_weights('./data/model.h5')
+model.load_weights('./data/face_expression_detect.h5')
 
 # mencegah penggunaan openCL dan pesan logging yang tidak perlu
 cv2.ocl.setUseOpenCL(False)
 
 # dictionary which assigns each label an emotion (alphabetical order)
-# emotion_dict = {0: "Angry", 1: "Disgusted", 2: "Fearful", 3: "Happy", 4: "Neutral", 5: "Sad", 6: "Surprised"}
 # membuat kamus yang memberikan setiap label emosi (urutan abjad)
 emotion_dict = {0: "Marah", 1: "Jijik", 2: "Takut", 3: "Senang", 4: "Netral", 5: "Sedih", 6: "Terkejut"}
 
-# Haarcascade
 # Face Recognition 
 faceRecog = cv2.face.LBPHFaceRecognizer_create()
 # membaca model faceRecog
-# faceRecog.read("./data/my_faces.xml")
 faceRecog.read("./data/my_faces.xml")
 
 # open camera
 camera = cv2.VideoCapture(0)
 
 # dbName
+# List/array ini menyesuaikan dengan Id Gambar yand direcord di file recordFile.py, Jika Id gambarnya 1 maka "Andrian" akan ditampilkan
 names = ["Unknown", "Andrian", "Cimen"]
 
 while True :
@@ -57,6 +55,7 @@ while True :
     if not statusCam:
         break
 
+    # Haarcascade
     faceCascade = cv2.CascadeClassifier('./data/haarcascade_frontalface_default.xml')
     grayFrame = cv2.cvtColor(frameCam, cv2.COLOR_BGR2GRAY)
     faceDetect = faceCascade.detectMultiScale(grayFrame, 1.2, 5)
@@ -65,7 +64,7 @@ while True :
         frameCam = cv2.rectangle(frameCam, (x,y), (x+w, y+h), color=(255, 82, 91), thickness=2)
         roy_gray = grayFrame[y:y + h, x:x + w]
 
-        # expression detect
+        # face expression detect
         cropped_img = np.expand_dims(np.expand_dims(cv2.resize(roy_gray, (48,48)), -1), 0)
         prediction = model.predict(cropped_img)
         maxIndex = int(np.argmax(prediction))
